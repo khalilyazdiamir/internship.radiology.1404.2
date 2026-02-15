@@ -3,74 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>برنامه کارآموزی رادیولوژی</title>
+    <title>پرتال کارآموزی رادیولوژی</title>
     <style>
+        /* تنظیمات کلی و پس‌زمینه حرفه‌ای */
         body { 
-            font-family: Tahoma, Arial, sans-serif; 
-            text-align: center; 
-            padding: 50px; 
-            background-color: #f0f2f5; 
-            transition: background-color 0.3s, color 0.3s; /* انیمیشن نرم برای تغییر رنگ */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* الگوی پس‌زمینه تکنیکال (شبیه گرید مهندسی) */
+            background-color: #e5e5f7;
+            background-image:  radial-gradient(#444cf7 0.5px, transparent 0.5px), radial-gradient(#444cf7 0.5px, #e5e5f7 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            transition: all 0.5s ease;
         }
-        h1 { color: #333; }
+
+        /* جعبه اصلی (Card) - قلب طراحی مدرن */
+        .main-container {
+            background-color: rgba(255, 255, 255, 0.95); /* سفید با کمی شفافیت */
+            padding: 40px;
+            border-radius: 20px; /* گوشه‌های گرد */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); /* سایه عمیق و حرفه‌ای */
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            backdrop-filter: blur(10px); /* افکت شیشه‌ای مات */
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        h1 { 
+            color: #2c3e50;
+            font-weight: 800;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        p.subtitle {
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
         
+        /* استایل دکمه‌های ورودی */
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
         .btn {
-            display: block;
-            width: 200px;
-            margin: 20px auto;
-            padding: 15px;
-            background-color: #007bff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #007bff, #0056b3); /* گرادینت آبی حرفه‌ای */
             color: white;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 18px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+        }
+        .btn:hover { 
+            transform: translateY(-3px); /* حرکت به بالا هنگام هاور */
+            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.4);
+        }
+        .btn span.icon {
+            font-size: 1.4rem;
+        }
+
+        /* دکمه حالت شب */
+        .dark-mode-toggle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.05);
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
             transition: 0.3s;
         }
-        .btn:hover { background-color: #0056b3; }
+        .dark-mode-toggle:hover {
+            background: rgba(0,0,0,0.1);
+            transform: rotate(15deg);
+        }
 
-        /* --- استایل‌های حالت شب --- */
+        /* --- تنظیمات حالت شب حرفه‌ای --- */
         body.dark-mode {
-            background-color: #121212 !important;
-            color: #e0e0e0 !important;
+            /* پس‌زمینه تاریک با الگوی تکنیکال */
+            background-color: #0a0e17;
+            background-image: radial-gradient(#2c3e50 0.5px, transparent 0.5px), radial-gradient(#2c3e50 0.5px, #0a0e17 0.5px);
         }
-        body.dark-mode h1 {
-            color: #ffffff !important;
+        body.dark-mode .main-container {
+            background-color: rgba(30, 30, 40, 0.95);
+            color: #e0e0e0;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        body.dark-mode .btn {
-            background-color: #1e1e1e !important;
-            border: 1px solid #444 !important;
-            color: #8ab4f8 !important;
-        }
+        body.dark-mode h1 { color: #ffffff; }
+        body.dark-mode p.subtitle { color: #b0b0b0; }
+        body.dark-mode .dark-mode-toggle { background: rgba(255,255,255,0.1); color: white; }
+        
     </style>
 </head>
 <body>
 
-    <button onclick="toggleDarkMode()" style="margin-bottom: 20px; padding:10px; background:#333; color:white; border:none; border-radius:5px; cursor:pointer;">
-        🌙 حالت شب
-    </button>
+    <div class="main-container">
+        <button onclick="toggleDarkMode()" class="dark-mode-toggle" title="تغییر حالت شب/روز">
+           🌓
+        </button>
 
-    <h1>برنامه کارآموزی دانشجویان</h1>
-    <p>لطفاً ورودی خود را انتخاب کنید:</p>
+        <div style="margin-bottom: 30px;">
+            <span style="font-size: 3rem;">☢️</span>
+            <h1>پرتال کارآموزی رادیولوژی</h1>
+            <p class="subtitle">سیستم یکپارچه مدیریت شیفت‌های دانشجویان</p>
+        </div>
 
-    <a href="1401.html" class="btn">ورودی ۱۴۰۱</a>
-    <a href="1402.html" class="btn">ورودی ۱۴۰۲</a>
-    <a href="1403.html" class="btn">ورودی ۱۴۰۳</a>
+        <div class="btn-container">
+            <a href="1401.html" class="btn">
+                <span>ورودی ۱۴۰۱</span>
+                <span class="icon">🩺</span>
+            </a>
+            <a href="1402.html" class="btn">
+                <span>ورودی ۱۴۰۲</span>
+                <span class="icon">🩻</span>
+            </a>
+            <a href="1403.html" class="btn">
+                <span>ورودی ۱۴۰۳</span>
+                <span class="icon">🧑‍⚕️</span>
+            </a>
+        </div>
+    </div>
 
 <script>
-    // تنظیمات هوشمند حالت شب
+    // تنظیمات هوشمند حالت شب (بدون تغییر نسبت به قبل)
     function toggleDarkMode() {
         var element = document.body;
         element.classList.toggle("dark-mode");
-        
-        // ذخیره در حافظه که وقتی رفتی صفحه بعد، یادت بمونه
         if(element.classList.contains("dark-mode")) {
             localStorage.setItem("theme", "dark");
         } else {
             localStorage.setItem("theme", "light");
         }
     }
-
-    // چک کردن حافظه موقع باز شدن سایت
     if(localStorage.getItem("theme") == "dark") {
         document.body.classList.add("dark-mode");
     }
