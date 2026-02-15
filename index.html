@@ -5,11 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>برنامه کارآموزی رادیولوژی</title>
     <style>
-        body { font-family: Tahoma, Arial, sans-serif; text-align: center; padding: 50px; background-color: #f0f2f5; }
-<button onclick="toggleDarkMode()" style="margin-bottom: 20px; padding:10px; background:#333; color:white; border:none; border-radius:5px; cursor:pointer;">
-    🌙 حالت شب
-</button>
+        body { 
+            font-family: Tahoma, Arial, sans-serif; 
+            text-align: center; 
+            padding: 50px; 
+            background-color: #f0f2f5; 
+            transition: background-color 0.3s, color 0.3s; /* انیمیشن نرم برای تغییر رنگ */
+        }
         h1 { color: #333; }
+        
         .btn {
             display: block;
             width: 200px;
@@ -23,9 +27,27 @@
             transition: 0.3s;
         }
         .btn:hover { background-color: #0056b3; }
+
+        /* --- استایل‌های حالت شب --- */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode h1 {
+            color: #ffffff !important;
+        }
+        body.dark-mode .btn {
+            background-color: #1e1e1e !important;
+            border: 1px solid #444 !important;
+            color: #8ab4f8 !important;
+        }
     </style>
 </head>
 <body>
+
+    <button onclick="toggleDarkMode()" style="margin-bottom: 20px; padding:10px; background:#333; color:white; border:none; border-radius:5px; cursor:pointer;">
+        🌙 حالت شب
+    </button>
 
     <h1>برنامه کارآموزی دانشجویان</h1>
     <p>لطفاً ورودی خود را انتخاب کنید:</p>
@@ -33,8 +55,9 @@
     <a href="1401.html" class="btn">ورودی ۱۴۰۱</a>
     <a href="1402.html" class="btn">ورودی ۱۴۰۲</a>
     <a href="1403.html" class="btn">ورودی ۱۴۰۳</a>
+
 <script>
-    // تنظیمات حالت شب
+    // تنظیمات هوشمند حالت شب
     function toggleDarkMode() {
         var element = document.body;
         element.classList.toggle("dark-mode");
@@ -53,22 +76,5 @@
     }
 </script>
 
-<style>
-    /* رنگ‌های حالت شب مخصوص منو */
-    .dark-mode {
-        background-color: #121212 !important;
-        color: #e0e0e0 !important;
-    }
-    .dark-mode h1 {
-        color: #ffffff !important;
-    }
-    /* رنگ دکمه‌ها در حالت شب */
-    .dark-mode .btn {
-        background-color: #1e1e1e !important;
-        border: 1px solid #444 !important;
-        color: #8ab4f8 !important;
-    }
-</style>
-    
 </body>
 </html>
