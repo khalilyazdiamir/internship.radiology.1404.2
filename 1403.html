@@ -3,85 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>کارآموزی ۲ رادیولوژی (۱۴۰۴-۱۴۰۵)</title>
+    <title>کارآموزی ۲ رادیولوژی (۱۴۰۳)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
         :root {
             --bg-color: #faf5ff; /* بنفش خیلی روشن */
-            --primary: #7e22ce; /* بنفش تیره */
+            --pattern-color: #a855f7; /* رنگ نقاط پس‌زمینه */
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --primary: #7e22ce; /* رنگ اصلی: بنفش تیره */
             --text-dark: #1e293b;
             --text-light: #64748b;
-            --border: #e9d5ff;
-            --white: #ffffff;
+            --border: #f3e8ff;
+            --shadow: 0 4px 6px -1px rgba(126, 34, 206, 0.1), 0 2px 4px -1px rgba(126, 34, 206, 0.06);
         }
 
         body {
             font-family: Tahoma, Arial, sans-serif;
-            background-color: var(--bg-color);
             margin: 0;
-            padding: 10px;
+            padding: 20px;
             color: var(--text-dark);
             line-height: 1.6;
+            
+            /* پس‌زمینه حرفه‌ای */
+            background-color: var(--bg-color);
+            background-image: radial-gradient(var(--pattern-color) 0.5px, transparent 0.5px), radial-gradient(var(--pattern-color) 0.5px, var(--bg-color) 0.5px);
+            background-size: 20px 20px;
+            transition: all 0.3s ease;
+        }
+
+        /* حالت شب */
+        body.dark-mode {
+            --bg-color: #0f172a;
+            --pattern-color: #9333ea;
+            --card-bg: rgba(30, 41, 59, 0.95);
+            --primary: #c084fc;
+            --text-dark: #f1f5f9;
+            --text-light: #94a3b8;
+            --border: #334155;
         }
 
         .container {
-            max-width: 100%;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
-        /* هدر */
-        .header {
-            background: var(--white);
-            padding: 15px;
+        /* نوار ابزار بالا */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            padding: 10px 15px;
             border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(5px);
+        }
+
+        .btn {
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-home { background: #64748b; color: white; }
+        .btn-dark { background: #1e293b; color: white; }
+        .btn-pdf { background: #ef4444; color: white; }
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        /* هدر اصلی */
+        .header {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
             border: 1px solid var(--border);
             text-align: center;
         }
 
-        h1 { margin: 0; font-size: 1.1rem; color: var(--primary); }
-        .subtitle { font-size: 0.8rem; color: var(--text-light); margin-top: 5px; }
+        h1 { margin: 0; font-size: 1.4rem; color: var(--primary); }
+        .subtitle { font-size: 0.9rem; color: var(--text-light); margin-top: 5px; }
 
         .controls {
-            margin-top: 10px;
-            background: #f3e8ff;
-            padding: 8px;
-            border-radius: 8px;
+            margin-top: 15px;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             gap: 10px;
-            border: 1px solid #d8b4fe;
         }
 
         select {
-            padding: 6px 10px;
-            border-radius: 6px;
-            border: 1px solid #a855f7;
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
             font-family: inherit;
-            font-weight: bold;
-            color: #6b21a8;
+            background: var(--bg-color);
+            color: var(--text-dark);
             outline: none;
-            background: white;
+            font-weight: bold;
         }
 
         /* کارت‌ها */
         .card {
-            background: var(--white);
-            border-radius: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
             border: 1px solid var(--border);
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             overflow: hidden;
         }
 
         .card-header {
-            background: #f3e8ff;
-            padding: 8px 12px;
+            background: rgba(126, 34, 206, 0.05); /* هاله بنفش */
+            padding: 10px 15px;
             border-bottom: 1px solid var(--border);
             font-weight: bold;
-            color: #581c87;
-            font-size: 0.85rem;
+            color: var(--primary);
+            font-size: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -89,97 +139,108 @@
 
         .table-wrapper {
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             white-space: nowrap;
         }
 
         th, td {
-            padding: 8px 6px;
+            padding: 10px 8px;
             text-align: center;
-            border-bottom: 1px solid #faf5ff;
-            border-left: 1px solid #faf5ff;
+            border-bottom: 1px solid var(--border);
+            border-left: 1px solid var(--border);
         }
         
         td:last-child, th:last-child { border-left: none; }
 
         th { 
-            background-color: #f3e8ff; 
+            background-color: rgba(126, 34, 206, 0.05); 
             color: var(--text-dark); 
             font-weight: bold;
-            position: sticky;
-            top: 0;
-            z-index: 5;
         }
         
         /* ستون تاریخ */
         td:first-child, th:first-child {
             position: sticky;
             right: 0;
-            background-color: #ffffff;
-            border-left: 2px solid #e9d5ff;
+            background-color: var(--card-bg);
+            border-left: 2px solid var(--border);
             z-index: 10;
             font-weight: bold;
-            min-width: 70px;
-            color: #334155;
+            min-width: 80px;
+            color: var(--text-dark);
         }
-        th:first-child { background-color: #f3e8ff; }
 
         /* استایل‌های داخل سلول */
         .station-cell {
-            padding: 4px 6px;
-            border-radius: 4px;
+            padding: 6px 8px;
+            border-radius: 6px;
             font-weight: bold;
             display: flex;
             flex-direction: column;
             align-items: center;
             width: 100%;
             box-sizing: border-box;
-            font-size: 0.7rem;
+            font-size: 0.8rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
         
         .instructor-name {
-            font-size: 0.6rem;
+            font-size: 0.7rem;
             font-weight: normal;
-            opacity: 0.9;
+            opacity: 0.85;
             margin-top: 2px;
-            color: inherit;
         }
 
         /* رنگ‌بندی بیمارستان‌ها */
         .bg-afzali { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; } /* قرمز */
         .bg-bahonar { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; } /* آبی */
         .bg-shafa { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; } /* سبز */
-        .bg-off { background: #f1f5f9; color: #94a3b8; border: 1px dashed #cbd5e1; }
+        .bg-off { background: rgba(0,0,0,0.05); color: var(--text-light); border: 1px dashed var(--border); }
 
         .input-group input {
             width: 100%;
-            min-width: 110px;
-            padding: 4px;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
+            min-width: 100px;
+            padding: 6px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
             text-align: center;
             font-family: inherit;
-            font-size: 0.8rem;
+            background: transparent;
+            color: var(--text-dark);
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="main-content">
+    
+    <div class="toolbar" data-html2canvas-ignore="true">
+        <a href="index.html" class="btn btn-home">
+            <i class="fas fa-home"></i> خانه
+        </a>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="toggleDarkMode()" class="btn btn-dark">
+                <i class="fas fa-moon"></i> شب/روز
+            </button>
+            <button onclick="downloadPDF()" class="btn btn-pdf">
+                <i class="fas fa-file-pdf"></i> دانلود PDF
+            </button>
+        </div>
+    </div>
+
     <div class="header">
-        <h1>📅 کارآموزی ۲ رادیولوژی</h1>
+        <h1>📅 برنامه کارآموزی ۲ رادیولوژی (۱۴۰۳)</h1>
         <div class="subtitle">یکشنبه‌ها (صبح و عصر) | نیمسال دوم ۱۴۰۵-۱۴۰۴</div>
         
-        <div class="controls">
-            <span>گروه خود را انتخاب کنید:</span>
+        <div class="controls" data-html2canvas-ignore="true">
+            <span>فیلتر گروه:</span>
             <select id="groupSelect" onchange="renderSchedule()">
-                <option value="all">نمای کلی (همه گروه‌ها)</option>
+                <option value="all">نمایش همه گروه‌ها</option>
                 <option value="1">گروه ۱</option>
                 <option value="2">گروه ۲</option>
                 <option value="3">گروه ۳</option>
@@ -191,8 +252,7 @@
     </div>
 
     <div id="scheduleContainer">
-        <!-- برنامه اینجا ساخته می‌شود -->
-    </div>
+        </div>
 
     <div class="card">
         <div class="card-header">
@@ -230,120 +290,64 @@
 
     <div class="card">
         <div class="card-header">
-            <span>👥 اسامی دانشجویان</span>
+            <span>👥 اسامی دانشجویان (ذخیره خودکار)</span>
         </div>
         <div class="table-wrapper" id="namesTableContainer">
-            <!-- جدول اسامی اینجا ساخته می‌شود -->
-        </div>
+            </div>
     </div>
 </div>
 
 <script>
+    // --- تنظیمات دارک مود و PDF ---
+    function toggleDarkMode() {
+        document.body.classList.toggle("dark-mode");
+        const isDark = document.body.classList.contains("dark-mode");
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+    }
+
+    if(localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+    }
+
+    function downloadPDF() {
+        const element = document.getElementById('main-content');
+        const opt = {
+            margin: 0.2,
+            filename: 'Radiology_Internship2_1403.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+        };
+        html2pdf().set(opt).from(element).save();
+    }
+
     // --- داده‌ها ---
     
-    // تعریف بخش‌ها، رنگ‌ها و اساتید
     const stations = {
         'afzali_m': { name: 'افضلی صبح', css: 'bg-afzali', instructor: 'خانم نادری' },
         'afzali_e': { name: 'افضلی عصر', css: 'bg-afzali', instructor: 'خانم زنگی آبادی' },
-        
         'bahonar_m': { name: 'باهنر صبح', css: 'bg-bahonar', instructor: 'دکتر علیمرادی' },
         'bahonar_e': { name: 'باهنر عصر', css: 'bg-bahonar', instructor: 'آقای ضیغمی' },
-        
         'shafa_m': { name: 'شفا صبح', css: 'bg-shafa', instructor: 'خانم سالاری' },
         'shafa_e': { name: 'شفا عصر', css: 'bg-shafa', instructor: 'آقای دهقانی' },
     };
 
-    // الگوی چرخشی بر اساس فایل جدید
-    // فایل مشخص کرده:
-    // افضلی: یکشنبه عصر(گ1)، یکشنبه صبح(گ6)
-    // باهنر: یکشنبه عصر(گ5)، یکشنبه صبح(گ4)
-    // شفا: یکشنبه عصر(گ3)، یکشنبه صبح(گ2)
-    // این یعنی همه 6 گروه در روز یکشنبه شیفت دارند (3 تا صبح، 3 تا عصر)
-    
     const rotationLogic = [
-        // روتیشن 1
-        { 
-            label: "روتیشن ۱", 
-            map: { 1: 'afzali_e', 6: 'afzali_m', 5: 'bahonar_e', 4: 'bahonar_m', 3: 'shafa_e', 2: 'shafa_m' }
-        },
-        // روتیشن 2
-        { 
-            label: "روتیشن ۲", 
-            map: { 2: 'afzali_e', 1: 'afzali_m', 6: 'bahonar_e', 5: 'bahonar_m', 4: 'shafa_e', 3: 'shafa_m' }
-        },
-        // روتیشن 3
-        { 
-            label: "روتیشن ۳", 
-            map: { 3: 'afzali_e', 2: 'afzali_m', 1: 'bahonar_e', 6: 'bahonar_m', 5: 'shafa_e', 4: 'shafa_m' }
-        },
-        // روتیشن 4
-        { 
-            label: "روتیشن ۴", 
-            map: { 4: 'afzali_e', 3: 'afzali_m', 2: 'bahonar_e', 1: 'bahonar_m', 6: 'shafa_e', 5: 'shafa_m' }
-        },
-        // روتیشن 5
-        { 
-            label: "روتیشن ۵", 
-            map: { 5: 'afzali_e', 4: 'afzali_m', 3: 'bahonar_e', 2: 'bahonar_m', 1: 'shafa_e', 6: 'shafa_m' }
-        },
-        // روتیشن 6
-        { 
-            label: "روتیشن ۶", 
-            map: { 6: 'afzali_e', 5: 'afzali_m', 4: 'bahonar_e', 3: 'bahonar_m', 2: 'shafa_e', 1: 'shafa_m' }
-        }
+        { label: "روتیشن ۱", map: { 1: 'afzali_e', 6: 'afzali_m', 5: 'bahonar_e', 4: 'bahonar_m', 3: 'shafa_e', 2: 'shafa_m' } },
+        { label: "روتیشن ۲", map: { 2: 'afzali_e', 1: 'afzali_m', 6: 'bahonar_e', 5: 'bahonar_m', 4: 'shafa_e', 3: 'shafa_m' } },
+        { label: "روتیشن ۳", map: { 3: 'afzali_e', 2: 'afzali_m', 1: 'bahonar_e', 6: 'bahonar_m', 5: 'shafa_e', 4: 'shafa_m' } },
+        { label: "روتیشن ۴", map: { 4: 'afzali_e', 3: 'afzali_m', 2: 'bahonar_e', 1: 'bahonar_m', 6: 'shafa_e', 5: 'shafa_m' } },
+        { label: "روتیشن ۵", map: { 5: 'afzali_e', 4: 'afzali_m', 3: 'bahonar_e', 2: 'bahonar_m', 1: 'shafa_e', 6: 'shafa_m' } },
+        { label: "روتیشن ۶", map: { 6: 'afzali_e', 5: 'afzali_m', 4: 'bahonar_e', 3: 'bahonar_m', 2: 'shafa_e', 1: 'shafa_m' } }
     ];
 
-    // تاریخ‌های مشخص شده (فقط یکشنبه‌ها طبق جدول بازه‌ها)
     const scheduleDates = [
-        { 
-            range: "۱۶ تا ۲۳ فروردین ۱۴۰۵", 
-            rotIndex: 0,
-            days: [
-                { d: "یکشنبه ۱۶ فروردین" },
-                { d: "یکشنبه ۲۳ فروردین" }
-            ]
-        },
-        { 
-            range: "۳۰ فروردین تا ۶ اردیبهشت ۱۴۰۵", 
-            rotIndex: 1,
-            days: [
-                { d: "یکشنبه ۳۰ فروردین" },
-                { d: "یکشنبه ۶ اردیبهشت" }
-            ]
-        },
-        { 
-            range: "۱۳ تا ۲۰ اردیبهشت ۱۴۰۵", 
-            rotIndex: 2,
-            days: [
-                { d: "یکشنبه ۱۳ اردیبهشت" },
-                { d: "یکشنبه ۲۰ اردیبهشت" }
-            ]
-        },
-        { 
-            range: "۲۷ اردیبهشت تا ۳ خرداد ۱۴۰۵", 
-            rotIndex: 3,
-            days: [
-                { d: "یکشنبه ۲۷ اردیبهشت" },
-                { d: "یکشنبه ۳ خرداد" }
-            ]
-        },
-        { 
-            range: "۱۰ تا ۱۷ خرداد ۱۴۰۵", 
-            rotIndex: 4,
-            days: [
-                { d: "یکشنبه ۱۰ خرداد" },
-                { d: "یکشنبه ۱۷ خرداد" }
-            ]
-        },
-        { 
-            range: "۲۴ خرداد تا ۷ تیر ۱۴۰۵", 
-            rotIndex: 5,
-            days: [
-                { d: "یکشنبه ۲۴ خرداد" },
-                { d: "یکشنبه ۳۱ خرداد" },
-                { d: "یکشنبه ۷ تیر" } // بازه آخر ۳ هفته است
-            ]
-        }
+        { range: "۱۶ تا ۲۳ فروردین ۱۴۰۵", rotIndex: 0, days: [{ d: "یکشنبه ۱۶ فروردین" }, { d: "یکشنبه ۲۳ فروردین" }] },
+        { range: "۳۰ فروردین تا ۶ اردیبهشت ۱۴۰۵", rotIndex: 1, days: [{ d: "یکشنبه ۳۰ فروردین" }, { d: "یکشنبه ۶ اردیبهشت" }] },
+        { range: "۱۳ تا ۲۰ اردیبهشت ۱۴۰۵", rotIndex: 2, days: [{ d: "یکشنبه ۱۳ اردیبهشت" }, { d: "یکشنبه ۲۰ اردیبهشت" }] },
+        { range: "۲۷ اردیبهشت تا ۳ خرداد ۱۴۰۵", rotIndex: 3, days: [{ d: "یکشنبه ۲۷ اردیبهشت" }, { d: "یکشنبه ۳ خرداد" }] },
+        { range: "۱۰ تا ۱۷ خرداد ۱۴۰۵", rotIndex: 4, days: [{ d: "یکشنبه ۱۰ خرداد" }, { d: "یکشنبه ۱۷ خرداد" }] },
+        { range: "۲۴ خرداد تا ۷ تیر ۱۴۰۵", rotIndex: 5, days: [{ d: "یکشنبه ۲۴ خرداد" }, { d: "یکشنبه ۳۱ خرداد" }, { d: "یکشنبه ۷ تیر" }] }
     ];
 
     function renderSchedule() {
@@ -356,17 +360,16 @@
             card.className = 'card';
             
             const currentRotationMap = rotationLogic[block.rotIndex].map;
-
             let tableHeader = '';
             
             if (selectedGroup === 'all') {
                 tableHeader = `
-                    <th style="min-width:30px">گ ۱</th>
-                    <th style="min-width:30px">گ ۲</th>
-                    <th style="min-width:30px">گ ۳</th>
-                    <th style="min-width:30px">گ ۴</th>
-                    <th style="min-width:30px">گ ۵</th>
-                    <th style="min-width:30px">گ ۶</th>
+                    <th style="min-width:40px">گ ۱</th>
+                    <th style="min-width:40px">گ ۲</th>
+                    <th style="min-width:40px">گ ۳</th>
+                    <th style="min-width:40px">گ ۴</th>
+                    <th style="min-width:40px">گ ۵</th>
+                    <th style="min-width:40px">گ ۶</th>
                 `;
             } else {
                 tableHeader = `<th>محل کارآموزی گروه ${selectedGroup}</th>`;
@@ -381,7 +384,6 @@
                     for (let g = 1; g <= 6; g++) {
                         const stationKey = currentRotationMap[g];
                         const station = stations[stationKey];
-                        
                         if (station) {
                             rowContent += `<td><span class="station-cell ${station.css}">${station.name}</span></td>`;
                         } else {
@@ -391,13 +393,12 @@
                 } else {
                     const stationKey = currentRotationMap[selectedGroup];
                     const myStation = stations[stationKey];
-                    
                     if (myStation) {
                         rowContent += `
                             <td>
                                 <span class="station-cell ${myStation.css}" style="font-size:0.9rem; padding:8px;">
                                     ${myStation.name}
-                                    <span class="instructor-name">مربی: ${myStation.instructor}</span>
+                                    <span class="instructor-name">${myStation.instructor}</span>
                                 </span>
                             </td>`;
                     } else {
@@ -446,9 +447,7 @@
         { id: 6, label: 'گروه ۶', members: ['محمد مهدی ارجمند', 'عباس خادمی', 'علی دهقان', 'امیر فاضل غنی'] },
     ];
 
-    // کلید ذخیره‌سازی اختصاصی برای این برنامه (جدید)
-    const STORAGE_KEY = 'radiology_internship2_new_v2';
-    
+    const STORAGE_KEY = 'radiology_internship2_final_v1';
     let studentGroups = JSON.parse(localStorage.getItem(STORAGE_KEY)) || hardcodedGroups;
 
     function renderNamesTable() {
@@ -493,4 +492,3 @@
 
 </body>
 </html>
-
