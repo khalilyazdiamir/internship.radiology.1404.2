@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کارآموزی ۲ رادیولوژی (۱۴۰۴-۱۴۰۵)</title>
+    <style>
+        :root {
+            --bg-color: #faf5ff; /* بنفش خیلی روشن */
+            --primary: #7e22ce; /* بنفش تیره */
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --border: #e9d5ff;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: Tahoma, Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 10px;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* هدر */
+        .header {
+            background: var(--white);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        h1 { margin: 0; font-size: 1.1rem; color: var(--primary); }
+        .subtitle { font-size: 0.8rem; color: var(--text-light); margin-top: 5px; }
+
+        .controls {
+            margin-top: 10px;
+            background: #f3e8ff;
+            padding: 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: 1px solid #d8b4fe;
+        }
+
+        select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #a855f7;
+            font-family: inherit;
+            font-weight: bold;
+            color: #6b21a8;
+            outline: none;
+            background: white;
+        }
+
+        /* کارت‌ها */
+        .card {
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: #f3e8ff;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
+            font-weight: bold;
+            color: #581c87;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        th, td {
+            padding: 8px 6px;
+            text-align: center;
+            border-bottom: 1px solid #faf5ff;
+            border-left: 1px solid #faf5ff;
+        }
+        
+        td:last-child, th:last-child { border-left: none; }
+
+        th { 
+            background-color: #f3e8ff; 
+            color: var(--text-dark); 
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        
+        /* ستون تاریخ */
+        td:first-child, th:first-child {
+            position: sticky;
+            right: 0;
+            background-color: #ffffff;
+            border-left: 2px solid #e9d5ff;
+            z-index: 10;
+            font-weight: bold;
+            min-width: 70px;
+            color: #334155;
+        }
+        th:first-child { background-color: #f3e8ff; }
+
+        /* استایل‌های داخل سلول */
+        .station-cell {
+            padding: 4px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 0.7rem;
+        }
+        
+        .instructor-name {
+            font-size: 0.6rem;
+            font-weight: normal;
+            opacity: 0.9;
+            margin-top: 2px;
+            color: inherit;
+        }
+
+        /* رنگ‌بندی بیمارستان‌ها */
+        .bg-afzali { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; } /* قرمز */
+        .bg-bahonar { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; } /* آبی */
+        .bg-shafa { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; } /* سبز */
+        .bg-off { background: #f1f5f9; color: #94a3b8; border: 1px dashed #cbd5e1; }
+
+        .input-group input {
+            width: 100%;
+            min-width: 110px;
+            padding: 4px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            text-align: center;
+            font-family: inherit;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>📅 کارآموزی ۲ رادیولوژی</h1>
+        <div class="subtitle">یکشنبه‌ها (صبح و عصر) | نیمسال دوم ۱۴۰۵-۱۴۰۴</div>
+        
+        <div class="controls">
+            <span>گروه خود را انتخاب کنید:</span>
+            <select id="groupSelect" onchange="renderSchedule()">
+                <option value="all">نمای کلی (همه گروه‌ها)</option>
+                <option value="1">گروه ۱</option>
+                <option value="2">گروه ۲</option>
+                <option value="3">گروه ۳</option>
+                <option value="4">گروه ۴</option>
+                <option value="5">گروه ۵</option>
+                <option value="6">گروه ۶</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="scheduleContainer">
+        <!-- برنامه اینجا ساخته می‌شود -->
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span>👩‍⚕️ لیست مربیان و اساتید</span>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>بیمارستان</th>
+                        <th>یکشنبه صبح</th>
+                        <th>یکشنبه عصر</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="bg-afzali">افضلی پور</td>
+                        <td>خانم سوده نادری</td>
+                        <td>خانم حدیثه زنگی آبادی</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-bahonar">باهنر</td>
+                        <td>دکتر حدیثه علیمرادی</td>
+                        <td>آقای علی ضیغمی</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-shafa">شفا</td>
+                        <td>خانم مریم سالاری</td>
+                        <td>آقای رسول دهقانی سلطانی</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span>👥 اسامی دانشجویان</span>
+        </div>
+        <div class="table-wrapper" id="namesTableContainer">
+            <!-- جدول اسامی اینجا ساخته می‌شود -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- داده‌ها ---
+    
+    // تعریف بخش‌ها، رنگ‌ها و اساتید
+    const stations = {
+        'afzali_m': { name: 'افضلی صبح', css: 'bg-afzali', instructor: 'خانم نادری' },
+        'afzali_e': { name: 'افضلی عصر', css: 'bg-afzali', instructor: 'خانم زنگی آبادی' },
+        
+        'bahonar_m': { name: 'باهنر صبح', css: 'bg-bahonar', instructor: 'دکتر علیمرادی' },
+        'bahonar_e': { name: 'باهنر عصر', css: 'bg-bahonar', instructor: 'آقای ضیغمی' },
+        
+        'shafa_m': { name: 'شفا صبح', css: 'bg-shafa', instructor: 'خانم سالاری' },
+        'shafa_e': { name: 'شفا عصر', css: 'bg-shafa', instructor: 'آقای دهقانی' },
+    };
+
+    // الگوی چرخشی بر اساس فایل جدید
+    // فایل مشخص کرده:
+    // افضلی: یکشنبه عصر(گ1)، یکشنبه صبح(گ6)
+    // باهنر: یکشنبه عصر(گ5)، یکشنبه صبح(گ4)
+    // شفا: یکشنبه عصر(گ3)، یکشنبه صبح(گ2)
+    // این یعنی همه 6 گروه در روز یکشنبه شیفت دارند (3 تا صبح، 3 تا عصر)
+    
+    const rotationLogic = [
+        // روتیشن 1
+        { 
+            label: "روتیشن ۱", 
+            map: { 1: 'afzali_e', 6: 'afzali_m', 5: 'bahonar_e', 4: 'bahonar_m', 3: 'shafa_e', 2: 'shafa_m' }
+        },
+        // روتیشن 2
+        { 
+            label: "روتیشن ۲", 
+            map: { 2: 'afzali_e', 1: 'afzali_m', 6: 'bahonar_e', 5: 'bahonar_m', 4: 'shafa_e', 3: 'shafa_m' }
+        },
+        // روتیشن 3
+        { 
+            label: "روتیشن ۳", 
+            map: { 3: 'afzali_e', 2: 'afzali_m', 1: 'bahonar_e', 6: 'bahonar_m', 5: 'shafa_e', 4: 'shafa_m' }
+        },
+        // روتیشن 4
+        { 
+            label: "روتیشن ۴", 
+            map: { 4: 'afzali_e', 3: 'afzali_m', 2: 'bahonar_e', 1: 'bahonar_m', 6: 'shafa_e', 5: 'shafa_m' }
+        },
+        // روتیشن 5
+        { 
+            label: "روتیشن ۵", 
+            map: { 5: 'afzali_e', 4: 'afzali_m', 3: 'bahonar_e', 2: 'bahonar_m', 1: 'shafa_e', 6: 'shafa_m' }
+        },
+        // روتیشن 6
+        { 
+            label: "روتیشن ۶", 
+            map: { 6: 'afzali_e', 5: 'afzali_m', 4: 'bahonar_e', 3: 'bahonar_m', 2: 'shafa_e', 1: 'shafa_m' }
+        }
+    ];
+
+    // تاریخ‌های مشخص شده (فقط یکشنبه‌ها طبق جدول بازه‌ها)
+    const scheduleDates = [
+        { 
+            range: "۱۶ تا ۲۳ فروردین ۱۴۰۵", 
+            rotIndex: 0,
+            days: [
+                { d: "یکشنبه ۱۶ فروردین" },
+                { d: "یکشنبه ۲۳ فروردین" }
+            ]
+        },
+        { 
+            range: "۳۰ فروردین تا ۶ اردیبهشت ۱۴۰۵", 
+            rotIndex: 1,
+            days: [
+                { d: "یکشنبه ۳۰ فروردین" },
+                { d: "یکشنبه ۶ اردیبهشت" }
+            ]
+        },
+        { 
+            range: "۱۳ تا ۲۰ اردیبهشت ۱۴۰۵", 
+            rotIndex: 2,
+            days: [
+                { d: "یکشنبه ۱۳ اردیبهشت" },
+                { d: "یکشنبه ۲۰ اردیبهشت" }
+            ]
+        },
+        { 
+            range: "۲۷ اردیبهشت تا ۳ خرداد ۱۴۰۵", 
+            rotIndex: 3,
+            days: [
+                { d: "یکشنبه ۲۷ اردیبهشت" },
+                { d: "یکشنبه ۳ خرداد" }
+            ]
+        },
+        { 
+            range: "۱۰ تا ۱۷ خرداد ۱۴۰۵", 
+            rotIndex: 4,
+            days: [
+                { d: "یکشنبه ۱۰ خرداد" },
+                { d: "یکشنبه ۱۷ خرداد" }
+            ]
+        },
+        { 
+            range: "۲۴ خرداد تا ۷ تیر ۱۴۰۵", 
+            rotIndex: 5,
+            days: [
+                { d: "یکشنبه ۲۴ خرداد" },
+                { d: "یکشنبه ۳۱ خرداد" },
+                { d: "یکشنبه ۷ تیر" } // بازه آخر ۳ هفته است
+            ]
+        }
+    ];
+
+    function renderSchedule() {
+        const selectedGroup = document.getElementById('groupSelect').value;
+        const container = document.getElementById('scheduleContainer');
+        container.innerHTML = '';
+
+        scheduleDates.forEach(block => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            const currentRotationMap = rotationLogic[block.rotIndex].map;
+
+            let tableHeader = '';
+            
+            if (selectedGroup === 'all') {
+                tableHeader = `
+                    <th style="min-width:30px">گ ۱</th>
+                    <th style="min-width:30px">گ ۲</th>
+                    <th style="min-width:30px">گ ۳</th>
+                    <th style="min-width:30px">گ ۴</th>
+                    <th style="min-width:30px">گ ۵</th>
+                    <th style="min-width:30px">گ ۶</th>
+                `;
+            } else {
+                tableHeader = `<th>محل کارآموزی گروه ${selectedGroup}</th>`;
+            }
+
+            let tableRows = '';
+            
+            block.days.forEach(day => {
+                let rowContent = '';
+                
+                if (selectedGroup === 'all') {
+                    for (let g = 1; g <= 6; g++) {
+                        const stationKey = currentRotationMap[g];
+                        const station = stations[stationKey];
+                        
+                        if (station) {
+                            rowContent += `<td><span class="station-cell ${station.css}">${station.name}</span></td>`;
+                        } else {
+                            rowContent += `<td><span class="station-cell bg-off">-</span></td>`;
+                        }
+                    }
+                } else {
+                    const stationKey = currentRotationMap[selectedGroup];
+                    const myStation = stations[stationKey];
+                    
+                    if (myStation) {
+                        rowContent += `
+                            <td>
+                                <span class="station-cell ${myStation.css}" style="font-size:0.9rem; padding:8px;">
+                                    ${myStation.name}
+                                    <span class="instructor-name">مربی: ${myStation.instructor}</span>
+                                </span>
+                            </td>`;
+                    } else {
+                        rowContent += `<td><span class="station-cell bg-off">آف</span></td>`;
+                    }
+                }
+
+                tableRows += `
+                    <tr>
+                        <td style="font-weight:bold;">${day.d}</td>
+                        ${rowContent}
+                    </tr>
+                `;
+            });
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <span>${block.range}</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>روز</th>
+                                ${tableHeader}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // --- بخش اسامی ---
+    
+    const hardcodedGroups = [
+        { id: 1, label: 'گروه ۱', members: ['مهرناز گرجی', 'سحر رنجبر', 'هانیه زرین', 'طاهره کشاورز'] },
+        { id: 2, label: 'گروه ۲', members: ['هلیا سادات امیری', 'زینب عسکری', 'صدیقه فلاح', 'آیسا ایرانمنش'] },
+        { id: 3, label: 'گروه ۳', members: ['بهداد غفاری', 'امیرحسین پور رشیدی', 'آرش روحانی', ''] },
+        { id: 4, label: 'گروه ۴', members: ['ندا زارعی', 'کیمیا موحدی', 'عسل فتاحی', ''] },
+        { id: 5, label: 'گروه ۵', members: ['مهشید زین الدینی', 'ریحانه قاسمی', 'فاطمه جمشیدی', 'اردلان نقی زاده'] },
+        { id: 6, label: 'گروه ۶', members: ['محمد مهدی ارجمند', 'عباس خادمی', 'علی دهقان', 'امیر فاضل غنی'] },
+    ];
+
+    // کلید ذخیره‌سازی اختصاصی برای این برنامه (جدید)
+    const STORAGE_KEY = 'radiology_internship2_new_v2';
+    
+    let studentGroups = JSON.parse(localStorage.getItem(STORAGE_KEY)) || hardcodedGroups;
+
+    function renderNamesTable() {
+        const container = document.getElementById('namesTableContainer');
+        let html = `<table><thead><tr><th style="width:30px">ردیف</th>`;
+        
+        studentGroups.forEach(g => {
+            html += `<th style="min-width:110px">${g.label}</th>`;
+        });
+        html += `</tr></thead><tbody>`;
+
+        [0, 1, 2, 3].forEach(idx => {
+            html += `<tr><td>${idx + 1}</td>`;
+            studentGroups.forEach(g => {
+                const val = g.members[idx] || '';
+                html += `<td class="input-group">
+                    <input type="text" 
+                           value="${val}" 
+                           oninput="updateMember(${g.id}, ${idx}, this.value)" 
+                           placeholder="...">
+                </td>`;
+            });
+            html += `</tr>`;
+        });
+        
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+    }
+
+    window.updateMember = function(groupId, memberIndex, value) {
+        const group = studentGroups.find(g => g.id === groupId);
+        if (group) {
+            group.members[memberIndex] = value;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(studentGroups));
+        }
+    };
+
+    renderSchedule();
+    renderNamesTable();
+
+</script>
+
+</body>
+</html>
+
