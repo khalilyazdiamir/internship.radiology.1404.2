@@ -6,6 +6,18 @@
     <title>برنامه کارآموزی رادیولوژی</title>
     <style>
         body { font-family: Tahoma, Arial, sans-serif; text-align: center; padding: 50px; background-color: #f0f2f5; }
+<div style="background:#eee; padding:15px; margin-bottom:20px; border-radius:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center;">
+    
+    <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="🔍 جستجوی نام دانشجو..." style="padding:10px; width:200px; border-radius:5px; border:1px solid #ccc;">
+
+    <button onclick="toggleDarkMode()" style="padding:10px; background:#333; color:white; border:none; border-radius:5px; cursor:pointer;">
+        🌙 حالت شب
+    </button>
+
+    <button onclick="downloadPDF()" style="padding:10px; background:#dc3545; color:white; border:none; border-radius:5px; cursor:pointer;">
+        📥 دانلود PDF
+    </button>
+</div>
         h1 { color: #333; }
         .btn {
             display: block;
@@ -30,6 +42,87 @@
     <a href="1401.html" class="btn">ورودی ۱۴۰۱</a>
     <a href="1402.html" class="btn">ورودی ۱۴۰۲</a>
     <a href="1403.html" class="btn">ورودی ۱۴۰۳</a>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+    // 1. تنظیمات جستجو
+    function searchTable() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        // فرض کردیم جدول شما تگ table داره. اگه کار نکرد، به جدول کلاس بده
+        table = document.getElementsByTagName("table")[0]; 
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td"); // جستجو در تمام ستون‌ها
+            if (td.length > 0) {
+                let found = false;
+                for(let j=0; j<td.length; j++){
+                    if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        found = true;
+                    }
+                }
+                if (found) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    // 2. تنظیمات حالت شب (Dark Mode)
+    function toggleDarkMode() {
+        var element = document.body;
+        element.classList.toggle("dark-mode");
+        
+        // ذخیره حالت شب در حافظه مرورگر که با رفرش نپره
+        if(element.classList.contains("dark-mode")) {
+            localStorage.setItem("theme", "dark");
+        } else {
+            localStorage.setItem("theme", "light");
+        }
+    }
+
+    // چک کردن حافظه برای حالت شب موقع لود شدن
+    if(localStorage.getItem("theme") == "dark") {
+        document.body.classList.add("dark-mode");
+    }
+
+    // 3. تنظیمات دانلود PDF
+    function downloadPDF() {
+        const element = document.body;
+        const opt = {
+            margin: 0.2,
+            filename: 'Barname_Radiology.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' } // landscape برای جدول‌های عریض بهتره
+        };
+        html2pdf().set(opt).from(element).save();
+    }
+</script>
+
+<style>
+    /* استایل‌های حالت شب */
+    .dark-mode {
+        background-color: #121212 !important;
+        color: #e0e0e0 !important;
+    }
+    .dark-mode table {
+        border-color: #444 !important;
+    }
+    .dark-mode th {
+        background-color: #333 !important;
+        color: #fff !important;
+    }
+    .dark-mode td {
+        background-color: #1e1e1e !important;
+        color: #ddd !important;
+        border-color: #444 !important;
+    }
+</style>
 
 </body>
 </html>
