@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>برنامه رادیولوژی (با اسامی)</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --primary: #4f46e5;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --white: #ffffff;
+            --holiday-bg: #fee2e2;
+            --holiday-text: #991b1b;
+        }
+
+        body {
+            font-family: Tahoma, Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 10px;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* هدر و کنترل‌ها */
+        .header {
+            background: var(--white);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        h1 { margin: 0; font-size: 1.1rem; color: var(--primary); }
+        .subtitle { font-size: 0.8rem; color: var(--text-light); margin-top: 5px; }
+
+        .controls {
+            margin-top: 10px;
+            background: #f1f5f9;
+            padding: 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            font-family: inherit;
+            font-weight: bold;
+            color: var(--primary);
+            outline: none;
+        }
+
+        /* کارت‌ها */
+        .card {
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
+            font-weight: bold;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        th, td {
+            padding: 8px 6px;
+            text-align: center;
+            border-bottom: 1px solid #f1f5f9;
+            border-left: 1px solid #f1f5f9;
+        }
+        
+        td:last-child, th:last-child { border-left: none; }
+
+        th { 
+            background-color: #f1f5f9; 
+            color: var(--text-dark); 
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        
+        /* ستون تاریخ */
+        td:first-child, th:first-child {
+            position: sticky;
+            right: 0;
+            background-color: #ffffff;
+            border-left: 2px solid #e2e8f0;
+            z-index: 10;
+            font-weight: bold;
+            min-width: 60px;
+        }
+        th:first-child { background-color: #f1f5f9; }
+
+        /* استایل‌های داخل سلول */
+        .station-cell {
+            padding: 4px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 0.7rem;
+        }
+
+        /* استایل تعطیلات */
+        .holiday-row td {
+            background-color: var(--holiday-bg);
+            color: var(--holiday-text);
+            font-weight: bold;
+            border-bottom: 1px solid #fecaca;
+        }
+        /* چون ستون اول فیکس است، باید رنگ پس‌زمینه‌اش را جداگانه فورس کنیم */
+        .holiday-row td:first-child {
+            background-color: var(--holiday-bg); 
+        }
+
+        /* رنگ‌بندی بخش‌ها */
+        .bg-blue { background: #dbeafe; color: #1e40af; }
+        .bg-blue-dark { background: #bfdbfe; color: #172554; }
+        .bg-green { background: #dcfce7; color: #166534; }
+        .bg-green-dark { background: #bbf7d0; color: #14532d; }
+        .bg-yellow { background: #fef9c3; color: #854d0e; }
+        .bg-purple { background: #f3e8ff; color: #6b21a8; }
+        .bg-red { background: #fee2e2; color: #991b1b; }
+        .bg-gray { background: #f3f4f6; color: #1f2937; }
+        .bg-off { background: #ffffff; color: #cbd5e1; border: 1px dashed #cbd5e1; }
+
+        .input-group input {
+            width: 100%;
+            min-width: 90px;
+            padding: 4px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            text-align: center;
+            font-family: inherit;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>📅 برنامه کارآموزی رادیولوژی</h1>
+        <div class="subtitle">به ترتیب گروه‌های ۱ تا ۸</div>
+        
+        <div class="controls">
+            <span>نمایش:</span>
+            <select id="groupSelect" onchange="renderSchedule()">
+                <option value="all">همه گروه‌ها (۱ تا ۸)</option>
+                <option value="1">فقط گروه ۱</option>
+                <option value="2">فقط گروه ۲</option>
+                <option value="3">فقط گروه ۳</option>
+                <option value="4">فقط گروه ۴</option>
+                <option value="5">فقط گروه ۵</option>
+                <option value="6">فقط گروه ۶</option>
+                <option value="7">فقط گروه ۷</option>
+                <option value="8">فقط گروه ۸</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="scheduleContainer">
+        <!-- برنامه اینجا ساخته می‌شود -->
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span>👥 اسامی دانشجویان (ذخیره خودکار)</span>
+        </div>
+        <div class="table-wrapper" id="namesTableContainer">
+            <!-- جدول اسامی اینجا ساخته می‌شود -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- داده‌ها ---
+    const stations = [
+        { id: 'mri_bahonar_m', name: 'باهنر صبح', css: 'bg-blue' },
+        { id: 'mri_bahonar_e', name: 'باهنر عصر', css: 'bg-blue-dark' },
+        { id: 'mri_shafa_m', name: 'شفا صبح', css: 'bg-green' },
+        { id: 'mri_shafa_e', name: 'شفا عصر', css: 'bg-green-dark' },
+        { id: 'dentistry', name: 'دندان', css: 'bg-yellow' },
+        { id: 'samen', name: 'ثامن', css: 'bg-purple' },
+        { id: 'afzali', name: 'افضلی', css: 'bg-red' },
+        { id: 'ultra', name: 'سونو', css: 'bg-gray' },
+    ];
+
+    // داده‌های برنامه (شامل تعطیلات)
+    const scheduleData = [
+        { range: '۲ تا ۶ اسفند', days: [
+            { d: 'شنبه ۲', a: { mri_bahonar_m: 7, mri_bahonar_e: 2, mri_shafa_m: 3, mri_shafa_e: 4, dentistry: 5, samen: 6, afzali: 1, ultra: 8 } },
+            { d: 'یکشنبه ۳', a: { mri_bahonar_m: 7, mri_bahonar_e: 2, mri_shafa_m: 3, mri_shafa_e: 4, dentistry: 5, samen: 6, afzali: 1, ultra: 8 } },
+            { d: 'دوشنبه ۴', a: { mri_bahonar_m: 7, mri_bahonar_e: 2, mri_shafa_m: 3, mri_shafa_e: 4, dentistry: 5, samen: 6, afzali: 1, ultra: 8 } },
+            { d: 'سه‌شنبه ۵', a: { mri_bahonar_m: 7, mri_bahonar_e: 2, mri_shafa_m: 3, mri_shafa_e: 4, dentistry: 5, samen: 6, afzali: 1, ultra: 8 } },
+            { d: 'چهارشنبه ۶', a: { mri_bahonar_m: 7, mri_bahonar_e: 2, mri_shafa_m: 3, mri_shafa_e: 4, dentistry: 5, samen: 6, afzali: 1, ultra: 8 } },
+        ]},
+        { range: '۹ تا ۱۳ اسفند', days: [
+            { d: 'شنبه ۹', a: { mri_bahonar_m: 7, mri_bahonar_e: 2, mri_shafa_m: 3, mri_shafa_e: 4, dentistry: 5, samen: 6, afzali: 1, ultra: 8 } },
+            { d: 'یکشنبه ۱۰', a: { mri_bahonar_m: 7, mri_bahonar_e: 2, mri_shafa_m: 3, mri_shafa_e: 4, dentistry: 5, samen: 6, afzali: 1, ultra: 8 } },
+            { d: 'دوشنبه ۱۱', a: { mri_bahonar_m: 7, mri_bahonar_e: 2, mri_shafa_m: 3, mri_shafa_e: 4, dentistry: 5, samen: 6, afzali: 1, ultra: 8 } },
+            { d: 'سه‌شنبه ۱۲', a: { mri_bahonar_m: 2, mri_bahonar_e: 7, mri_shafa_m: 8, mri_shafa_e: 3, dentistry: 4, samen: 5, afzali: 6, ultra: 1 } },
+            { d: 'چهارشنبه ۱۳', a: { mri_bahonar_m: 2, mri_bahonar_e: 7, mri_shafa_m: 8, mri_shafa_e: 3, dentistry: 4, samen: 5, afzali: 6, ultra: 1 } },
+        ]},
+        { range: '۱۶ تا ۲۰ اسفند', days: [
+            { d: 'شنبه ۱۶', a: { mri_bahonar_m: 2, mri_bahonar_e: 7, mri_shafa_m: 8, mri_shafa_e: 3, dentistry: 4, samen: 5, afzali: 6, ultra: 1 } },
+            { d: 'یکشنبه ۱۷', a: { mri_bahonar_m: 2, mri_bahonar_e: 7, mri_shafa_m: 8, mri_shafa_e: 3, dentistry: 4, samen: 5, afzali: 6, ultra: 1 } },
+            { d: 'دوشنبه ۱۸', a: { mri_bahonar_m: 2, mri_bahonar_e: 7, mri_shafa_m: 8, mri_shafa_e: 3, dentistry: 4, samen: 5, afzali: 6, ultra: 1 } },
+            { d: 'سه‌شنبه ۱۹', a: { mri_bahonar_m: 2, mri_bahonar_e: 7, mri_shafa_m: 8, mri_shafa_e: 3, dentistry: 4, samen: 5, afzali: 6, ultra: 1 } },
+            // ۲۰ اسفند تعطیل شد
+            { d: 'چهارشنبه ۲۰', holiday: true, a: {} },
+        ]},
+        { range: '۲۳ و ۲۴ اسفند', days: [
+            { d: 'شنبه ۲۳', a: { mri_bahonar_m: 2, mri_bahonar_e: 7, mri_shafa_m: 8, mri_shafa_e: 3, dentistry: 4, samen: 5, afzali: 6, ultra: 1 } },
+            { d: 'یکشنبه ۲۴', a: { mri_bahonar_m: 2, mri_bahonar_e: 7, mri_shafa_m: 8, mri_shafa_e: 3, dentistry: 4, samen: 5, afzali: 6, ultra: 1 } },
+        ]},
+        { range: '۱۵ تا ۱۹ فروردین', days: [
+            { d: 'شنبه ۱۵', a: { mri_bahonar_m: 1, mri_bahonar_e: 8, mri_shafa_m: 7, mri_shafa_e: 2, dentistry: 3, samen: 4, afzali: 5, ultra: 6 } },
+            { d: 'یکشنبه ۱۶', a: { mri_bahonar_m: 1, mri_bahonar_e: 8, mri_shafa_m: 7, mri_shafa_e: 2, dentistry: 3, samen: 4, afzali: 5, ultra: 6 } },
+            { d: 'دوشنبه ۱۷', a: { mri_bahonar_m: 1, mri_bahonar_e: 8, mri_shafa_m: 7, mri_shafa_e: 2, dentistry: 3, samen: 4, afzali: 5, ultra: 6 } },
+            { d: 'سه‌شنبه ۱۸', a: { mri_bahonar_m: 1, mri_bahonar_e: 8, mri_shafa_m: 7, mri_shafa_e: 2, dentistry: 3, samen: 4, afzali: 5, ultra: 6 } },
+            { d: 'چهارشنبه ۱۹', a: { mri_bahonar_m: 1, mri_bahonar_e: 8, mri_shafa_m: 7, mri_shafa_e: 2, dentistry: 3, samen: 4, afzali: 5, ultra: 6 } },
+        ]},
+        { range: '۲۲ تا ۲۶ فروردین', days: [
+            { d: 'شنبه ۲۲', a: { mri_bahonar_m: 1, mri_bahonar_e: 8, mri_shafa_m: 7, mri_shafa_e: 2, dentistry: 3, samen: 4, afzali: 5, ultra: 6 } },
+            { d: 'یکشنبه ۲۳', a: { mri_bahonar_m: 1, mri_bahonar_e: 8, mri_shafa_m: 7, mri_shafa_e: 2, dentistry: 3, samen: 4, afzali: 5, ultra: 6 } },
+            // ۲۴ فروردین تعطیل شد
+            { d: 'دوشنبه ۲۴', holiday: true, a: {} },
+            { d: 'سه‌شنبه ۲۵', a: { mri_bahonar_m: 1, mri_bahonar_e: 8, mri_shafa_m: 7, mri_shafa_e: 2, dentistry: 3, samen: 4, afzali: 5, ultra: 6 } },
+            { d: 'چهارشنبه ۲۶', a: { mri_bahonar_m: 1, mri_bahonar_e: 8, mri_shafa_m: 7, mri_shafa_e: 2, dentistry: 3, samen: 4, afzali: 5, ultra: 6 } },
+        ]},
+        { range: '۲۹ تا ۳۱ فروردین', days: [
+            { d: 'شنبه ۲۹', a: { mri_bahonar_m: 8, mri_bahonar_e: 1, mri_shafa_m: 6, mri_shafa_e: 7, dentistry: 2, samen: 3, afzali: 4, ultra: 5 } },
+            { d: 'یکشنبه ۳۰', a: { mri_bahonar_m: 8, mri_bahonar_e: 1, mri_shafa_m: 6, mri_shafa_e: 7, dentistry: 2, samen: 3, afzali: 4, ultra: 5 } },
+            { d: 'دوشنبه ۳۱', a: { mri_bahonar_m: 8, mri_bahonar_e: 1, mri_shafa_m: 6, mri_shafa_e: 7, dentistry: 2, samen: 3, afzali: 4, ultra: 5 } },
+        ]},
+        { range: '۱ و ۲ اردیبهشت', days: [
+            { d: 'سه‌شنبه ۱', a: { mri_bahonar_m: 8, mri_bahonar_e: 1, mri_shafa_m: 6, mri_shafa_e: 7, dentistry: 2, samen: 3, afzali: 4, ultra: 5 } },
+            { d: 'چهارشنبه ۲', a: { mri_bahonar_m: 8, mri_bahonar_e: 1, mri_shafa_m: 6, mri_shafa_e: 7, dentistry: 2, samen: 3, afzali: 4, ultra: 5 } },
+        ]},
+        { range: '۵ تا ۹ اردیبهشت', days: [
+            { d: 'شنبه ۵', a: { mri_bahonar_m: 8, mri_bahonar_e: 1, mri_shafa_m: 6, mri_shafa_e: 7, dentistry: 2, samen: 3, afzali: 4, ultra: 5 } },
+            { d: 'یکشنبه ۶', a: { mri_bahonar_m: 8, mri_bahonar_e: 1, mri_shafa_m: 6, mri_shafa_e: 7, dentistry: 2, samen: 3, afzali: 4, ultra: 5 } },
+            { d: 'دوشنبه ۷', a: { mri_bahonar_m: 8, mri_bahonar_e: 1, mri_shafa_m: 6, mri_shafa_e: 7, dentistry: 2, samen: 3, afzali: 4, ultra: 5 } },
+            { d: 'سه‌شنبه ۸', a: { mri_bahonar_m: 8, mri_bahonar_e: 1, mri_shafa_m: 6, mri_shafa_e: 7, dentistry: 2, samen: 3, afzali: 4, ultra: 5 } },
+            { d: 'چهارشنبه ۹', a: { mri_bahonar_m: 8, mri_bahonar_e: 1, mri_shafa_m: 6, mri_shafa_e: 7, dentistry: 2, samen: 3, afzali: 4, ultra: 5 } },
+        ]},
+        { range: '۱۲ تا ۱۶ اردیبهشت', days: [
+            { d: 'شنبه ۱۲', a: { mri_bahonar_m: 5, mri_bahonar_e: 6, mri_shafa_m: 1, mri_shafa_e: 8, dentistry: 7, samen: 2, afzali: 3, ultra: 4 } },
+            { d: 'یکشنبه ۱۳', a: { mri_bahonar_m: 5, mri_bahonar_e: 6, mri_shafa_m: 1, mri_shafa_e: 8, dentistry: 7, samen: 2, afzali: 3, ultra: 4 } },
+            { d: 'دوشنبه ۱۴', a: { mri_bahonar_m: 5, mri_bahonar_e: 6, mri_shafa_m: 1, mri_shafa_e: 8, dentistry: 7, samen: 2, afzali: 3, ultra: 4 } },
+            { d: 'سه‌شنبه ۱۵', a: { mri_bahonar_m: 5, mri_bahonar_e: 6, mri_shafa_m: 1, mri_shafa_e: 8, dentistry: 7, samen: 2, afzali: 3, ultra: 4 } },
+            { d: 'چهارشنبه ۱۶', a: { mri_bahonar_m: 5, mri_bahonar_e: 6, mri_shafa_m: 1, mri_shafa_e: 8, dentistry: 7, samen: 2, afzali: 3, ultra: 4 } },
+        ]},
+        { range: '۱۹ تا ۲۳ اردیبهشت', days: [
+            { d: 'شنبه ۱۹', a: { mri_bahonar_m: 5, mri_bahonar_e: 6, mri_shafa_m: 1, mri_shafa_e: 8, dentistry: 7, samen: 2, afzali: 3, ultra: 4 } },
+            { d: 'یکشنبه ۲۰', a: { mri_bahonar_m: 5, mri_bahonar_e: 6, mri_shafa_m: 1, mri_shafa_e: 8, dentistry: 7, samen: 2, afzali: 3, ultra: 4 } },
+            { d: 'دوشنبه ۲۱', a: { mri_bahonar_m: 5, mri_bahonar_e: 6, mri_shafa_m: 1, mri_shafa_e: 8, dentistry: 7, samen: 2, afzali: 3, ultra: 4 } },
+            { d: 'سه‌شنبه ۲۲', a: { mri_bahonar_m: 5, mri_bahonar_e: 6, mri_shafa_m: 1, mri_shafa_e: 8, dentistry: 7, samen: 2, afzali: 3, ultra: 4 } },
+            { d: 'چهارشنبه ۲۳', a: { mri_bahonar_m: 5, mri_bahonar_e: 6, mri_shafa_m: 1, mri_shafa_e: 8, dentistry: 7, samen: 2, afzali: 3, ultra: 4 } },
+        ]},
+        { range: '۲۶ تا ۳۰ اردیبهشت', days: [
+            { d: 'شنبه ۲۶', a: { mri_bahonar_m: 6, mri_bahonar_e: 5, mri_shafa_m: 4, mri_shafa_e: 1, dentistry: 8, samen: 7, afzali: 2, ultra: 3 } },
+            { d: 'یکشنبه ۲۷', a: { mri_bahonar_m: 6, mri_bahonar_e: 5, mri_shafa_m: 4, mri_shafa_e: 1, dentistry: 8, samen: 7, afzali: 2, ultra: 3 } },
+            { d: 'دوشنبه ۲۸', a: { mri_bahonar_m: 6, mri_bahonar_e: 5, mri_shafa_m: 4, mri_shafa_e: 1, dentistry: 8, samen: 7, afzali: 2, ultra: 3 } },
+            { d: 'سه‌شنبه ۲۹', a: { mri_bahonar_m: 6, mri_bahonar_e: 5, mri_shafa_m: 4, mri_shafa_e: 1, dentistry: 8, samen: 7, afzali: 2, ultra: 3 } },
+            { d: 'چهارشنبه ۳۰', a: { mri_bahonar_m: 6, mri_bahonar_e: 5, mri_shafa_m: 4, mri_shafa_e: 1, dentistry: 8, samen: 7, afzali: 2, ultra: 3 } },
+        ]},
+        { range: '۲ تا ۶ خرداد', days: [
+            { d: 'شنبه ۲', a: { mri_bahonar_m: 6, mri_bahonar_e: 5, mri_shafa_m: 4, mri_shafa_e: 1, dentistry: 8, samen: 7, afzali: 2, ultra: 3 } },
+            { d: 'یکشنبه ۳', a: { mri_bahonar_m: 6, mri_bahonar_e: 5, mri_shafa_m: 4, mri_shafa_e: 1, dentistry: 8, samen: 7, afzali: 2, ultra: 3 } },
+            { d: 'دوشنبه ۴', a: { mri_bahonar_m: 6, mri_bahonar_e: 5, mri_shafa_m: 4, mri_shafa_e: 1, dentistry: 8, samen: 7, afzali: 2, ultra: 3 } },
+            // ۵ و ۶ خرداد تعطیل شدند
+            { d: 'سه‌شنبه ۵', holiday: true, a: {} },
+            { d: 'چهارشنبه ۶', holiday: true, a: {} },
+        ]},
+        { range: '۹ تا ۱۳ خرداد', days: [
+            { d: 'شنبه ۹', a: { mri_bahonar_m: 3, mri_bahonar_e: 4, mri_shafa_m: 5, mri_shafa_e: 6, dentistry: 1, samen: 8, afzali: 7, ultra: 2 } },
+            { d: 'یکشنبه ۱۰', a: { mri_bahonar_m: 3, mri_bahonar_e: 4, mri_shafa_m: 5, mri_shafa_e: 6, dentistry: 1, samen: 8, afzali: 7, ultra: 2 } },
+            { d: 'دوشنبه ۱۱', a: { mri_bahonar_m: 3, mri_bahonar_e: 4, mri_shafa_m: 5, mri_shafa_e: 6, dentistry: 1, samen: 8, afzali: 7, ultra: 2 } },
+            { d: 'سه‌شنبه ۱۲', a: { mri_bahonar_m: 3, mri_bahonar_e: 4, mri_shafa_m: 5, mri_shafa_e: 6, dentistry: 1, samen: 8, afzali: 7, ultra: 2 } },
+            { d: 'چهارشنبه ۱۳', a: { mri_bahonar_m: 3, mri_bahonar_e: 4, mri_shafa_m: 5, mri_shafa_e: 6, dentistry: 1, samen: 8, afzali: 7, ultra: 2 } },
+        ]},
+        { range: '۱۶ تا ۲۰ خرداد', days: [
+            { d: 'شنبه ۱۶', a: { mri_bahonar_m: 3, mri_bahonar_e: 4, mri_shafa_m: 5, mri_shafa_e: 6, dentistry: 1, samen: 8, afzali: 7, ultra: 2 } },
+            { d: 'یکشنبه ۱۷', a: { mri_bahonar_m: 3, mri_bahonar_e: 4, mri_shafa_m: 5, mri_shafa_e: 6, dentistry: 1, samen: 8, afzali: 7, ultra: 2 } },
+            { d: 'دوشنبه ۱۸', a: { mri_bahonar_m: 3, mri_bahonar_e: 4, mri_shafa_m: 5, mri_shafa_e: 6, dentistry: 1, samen: 8, afzali: 7, ultra: 2 } },
+            { d: 'سه‌شنبه ۱۹', a: { mri_bahonar_m: 3, mri_bahonar_e: 4, mri_shafa_m: 5, mri_shafa_e: 6, dentistry: 1, samen: 8, afzali: 7, ultra: 2 } },
+            { d: 'چهارشنبه ۲۰', a: { mri_bahonar_m: 3, mri_bahonar_e: 4, mri_shafa_m: 5, mri_shafa_e: 6, dentistry: 1, samen: 8, afzali: 7, ultra: 2 } },
+        ]},
+        { range: '۲۳ تا ۲۷ خرداد', days: [
+            { d: 'شنبه ۲۳', a: { mri_bahonar_m: 4, mri_bahonar_e: 3, mri_shafa_m: 2, mri_shafa_e: 5, dentistry: 6, samen: 1, afzali: 8, ultra: 7 } },
+            { d: 'یکشنبه ۲۴', a: { mri_bahonar_m: 4, mri_bahonar_e: 3, mri_shafa_m: 2, mri_shafa_e: 5, dentistry: 6, samen: 1, afzali: 8, ultra: 7 } },
+            { d: 'دوشنبه ۲۵', a: { mri_bahonar_m: 4, mri_bahonar_e: 3, mri_shafa_m: 2, mri_shafa_e: 5, dentistry: 6, samen: 1, afzali: 8, ultra: 7 } },
+            { d: 'سه‌شنبه ۲۶', a: { mri_bahonar_m: 4, mri_bahonar_e: 3, mri_shafa_m: 2, mri_shafa_e: 5, dentistry: 6, samen: 1, afzali: 8, ultra: 7 } },
+            { d: 'چهارشنبه ۲۷', a: { mri_bahonar_m: 4, mri_bahonar_e: 3, mri_shafa_m: 2, mri_shafa_e: 5, dentistry: 6, samen: 1, afzali: 8, ultra: 7 } },
+        ]},
+        { range: '۳۰ و ۳۱ خرداد', days: [
+            { d: 'شنبه ۳۰', a: { mri_bahonar_m: 4, mri_bahonar_e: 3, mri_shafa_m: 2, mri_shafa_e: 5, dentistry: 6, samen: 1, afzali: 8, ultra: 7 } },
+            { d: 'یکشنبه ۳۱', a: { mri_bahonar_m: 4, mri_bahonar_e: 3, mri_shafa_m: 2, mri_shafa_e: 5, dentistry: 6, samen: 1, afzali: 8, ultra: 7 } },
+        ]},
+        { range: '۱ تا ۳ تیر', days: [
+            { d: 'دوشنبه ۱', a: { mri_bahonar_m: 4, mri_bahonar_e: 3, mri_shafa_m: 2, mri_shafa_e: 5, dentistry: 6, samen: 1, afzali: 8, ultra: 7 } },
+            { d: 'سه‌شنبه ۲', a: { mri_bahonar_m: 4, mri_bahonar_e: 3, mri_shafa_m: 2, mri_shafa_e: 5, dentistry: 6, samen: 1, afzali: 8, ultra: 7 } },
+            { d: 'چهارشنبه ۳', a: { mri_bahonar_m: 4, mri_bahonar_e: 3, mri_shafa_m: 2, mri_shafa_e: 5, dentistry: 6, samen: 1, afzali: 8, ultra: 7 } },
+        ]},
+    ];
+
+    // --- توابع کمکی ---
+
+    function findStationForGroup(dayAssignments, groupNum) {
+        if (!dayAssignments) return null; // محافظ برای روزهای تعطیل
+        const stationId = Object.keys(dayAssignments).find(key => dayAssignments[key] == groupNum);
+        return stations.find(s => s.id === stationId);
+    }
+
+    function renderSchedule() {
+        const selectedGroup = document.getElementById('groupSelect').value;
+        const container = document.getElementById('scheduleContainer');
+        container.innerHTML = '';
+
+        scheduleData.forEach(week => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            let tableHeader = '';
+            
+            if (selectedGroup === 'all') {
+                tableHeader = `
+                    <th style="min-width:40px">گ ۱</th>
+                    <th style="min-width:40px">گ ۲</th>
+                    <th style="min-width:40px">گ ۳</th>
+                    <th style="min-width:40px">گ ۴</th>
+                    <th style="min-width:40px">گ ۵</th>
+                    <th style="min-width:40px">گ ۶</th>
+                    <th style="min-width:40px">گ ۷</th>
+                    <th style="min-width:40px">گ ۸</th>
+                `;
+            } else {
+                tableHeader = `<th>محل کارآموزی گروه ${selectedGroup}</th>`;
+            }
+
+            let tableRows = '';
+            week.days.forEach(day => {
+                let rowContent = '';
+                
+                // بررسی تعطیلی
+                if (day.holiday) {
+                    const colSpan = selectedGroup === 'all' ? 8 : 1;
+                    rowContent = `<td colspan="${colSpan}">⛔ تعطیل</td>`;
+                    tableRows += `
+                        <tr class="holiday-row">
+                            <td style="font-weight:bold; min-width:60px;">${day.d}</td>
+                            ${rowContent}
+                        </tr>
+                    `;
+                } else {
+                    if (selectedGroup === 'all') {
+                        for (let g = 1; g <= 8; g++) {
+                            const station = findStationForGroup(day.a, g);
+                            if (station) {
+                                rowContent += `<td><span class="station-cell ${station.css}">${station.name}</span></td>`;
+                            } else {
+                                rowContent += `<td><span class="station-cell bg-off">-</span></td>`;
+                            }
+                        }
+                    } else {
+                        const myStation = findStationForGroup(day.a, selectedGroup);
+                        if (myStation) {
+                            rowContent = `<td><span class="station-cell ${myStation.css}" style="font-size:0.9rem; padding:8px;">${myStation.name}</span></td>`;
+                        } else {
+                            rowContent = `<td><span style="color:#94a3b8">آف / تعطیل</span></td>`;
+                        }
+                    }
+
+                    tableRows += `
+                        <tr>
+                            <td style="font-weight:bold; min-width:60px;">${day.d}</td>
+                            ${rowContent}
+                        </tr>
+                    `;
+                }
+            });
+
+            card.innerHTML = `
+                <div class="card-header">${week.range}</div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>روز</th>
+                                ${tableHeader}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // --- بخش اسامی و ذخیره‌سازی ---
+    
+    // تعریف اسامی ثابت
+    const hardcodedGroups = [
+        { id: 1, label: 'گروه ۱', members: ['علی محمد مروی', 'امیرحسین موسی پور', 'رزیتا سراوانی'] },
+        { id: 2, label: 'گروه ۲', members: ['فاطمه عباسی', 'آذین بهرامی', 'زهرا شرفعلی پور'] },
+        { id: 3, label: 'گروه ۳', members: ['امیرحسین خلیل یزدی', 'کوثر گلستانی', 'فادیا خالقی'] },
+        { id: 4, label: 'گروه ۴', members: ['کیانا جوادی', 'نیلوفر حصیبی', 'محمد مهدی بهزادی'] },
+        { id: 5, label: 'گروه ۵', members: ['کیمیا عسکری', 'نرجس اناری', 'میترا نجفی'] },
+        { id: 6, label: 'گروه ۶', members: ['نجمه حسینی', 'حسین کاهنی', 'فاطمه هاشمی'] },
+        { id: 7, label: 'گروه ۷', members: ['محمدمهدی حیدری', 'علی سلیمانی', ''] },
+        { id: 8, label: 'گروه ۸', members: ['علیرضا دژانکاه', 'علی عباسی', ''] },
+    ];
+
+    // تغییر نام کلید ذخیره‌سازی برای اطمینان از بارگذاری داده‌های جدید (ورژن نهایی)
+    const STORAGE_KEY = 'radiologyGroups_final_v1';
+    
+    let studentGroups = JSON.parse(localStorage.getItem(STORAGE_KEY)) || hardcodedGroups;
+
+    function renderNamesTable() {
+        const container = document.getElementById('namesTableContainer');
+        let html = `<table><thead><tr><th style="width:60px">ردیف</th>`;
+        
+        studentGroups.forEach(g => {
+            html += `<th style="min-width:90px">${g.label}</th>`;
+        });
+        html += `</tr></thead><tbody>`;
+
+        [0, 1, 2].forEach(idx => {
+            html += `<tr><td>نفر ${idx === 0 ? 'اول' : idx === 1 ? 'دوم' : 'سوم'}</td>`;
+            studentGroups.forEach(g => {
+                html += `<td class="input-group">
+                    <input type="text" 
+                           value="${g.members[idx]}" 
+                           oninput="updateMember(${g.id}, ${idx}, this.value)" 
+                           placeholder="...">
+                </td>`;
+            });
+            html += `</tr>`;
+        });
+        
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+    }
+
+    window.updateMember = function(groupId, memberIndex, value) {
+        const group = studentGroups.find(g => g.id === groupId);
+        if (group) {
+            group.members[memberIndex] = value;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(studentGroups));
+        }
+    };
+
+    renderSchedule();
+    renderNamesTable();
+
+</script>
+
+</body>
+</html>
+
+
