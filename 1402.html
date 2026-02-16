@@ -16,6 +16,8 @@
             --text-dark: #1e293b;
             --text-light: #64748b;
             --border: #e0e7ff;
+            --holiday-bg: #fee2e2;
+            --holiday-text: #991b1b;
             --shadow: 0 4px 6px -1px rgba(67, 56, 202, 0.1), 0 2px 4px -1px rgba(67, 56, 202, 0.06);
         }
 
@@ -39,6 +41,8 @@
             --text-dark: #f1f5f9;
             --text-light: #94a3b8;
             --border: #334155;
+            --holiday-bg: #450a0a;
+            --holiday-text: #fca5a5;
         }
 
         .container {
@@ -188,12 +192,20 @@
             margin-top: 2px;
         }
 
+        /* استایل‌های تعطیلات */
+        .holiday-row td {
+            background-color: var(--holiday-bg);
+            color: var(--holiday-text);
+        }
+        .holiday-row td:first-child { background-color: var(--holiday-bg); }
+
+
         .bg-afzali { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
         .bg-bahonar { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
         .bg-shafa { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
         .bg-off { background: rgba(0,0,0,0.05); color: var(--text-light); border: 1px dashed var(--border); }
 
-        /* --- استایل‌های جدید فوتر و اسامی ثابت --- */
+        /* --- استایل‌های فوتر و اسامی ثابت --- */
         .footer {
             margin-top: 40px;
             padding: 20px;
@@ -384,7 +396,7 @@
         { range: "۱۹ تا ۲۶ فروردین ۱۴۰۵", rotIndex: 1, days: [{ d: "چهارشنبه ۱۹ فروردین" }, { d: "چهارشنبه ۲۶ فروردین" }] },
         { range: "۲ تا ۹ اردیبهشت ۱۴۰۵", rotIndex: 2, days: [{ d: "چهارشنبه ۲ اردیبهشت" }, { d: "چهارشنبه ۹ اردیبهشت" }] },
         { range: "۱۶ تا ۲۳ اردیبهشت ۱۴۰۵", rotIndex: 3, days: [{ d: "چهارشنبه ۱۶ اردیبهشت" }, { d: "چهارشنبه ۲۳ اردیبهشت" }] },
-        { range: "۳۰ اردیبهشت تا ۱۳ خرداد ۱۴۰۵", rotIndex: 4, days: [{ d: "چهارشنبه ۳۰ اردیبهشت" }, { d: "چهارشنبه ۶ خرداد" }, { d: "چهارشنبه ۱۳ خرداد" }] },
+        { range: "۳۰ اردیبهشت تا ۱۳ خرداد ۱۴۰۵", rotIndex: 4, days: [{ d: "چهارشنبه ۳۰ اردیبهشت" }, { d: "چهارشنبه ۶ خرداد" }, { d: "چهارشنبه ۱۳ خرداد", holiday: true }] },
         { range: "۲۰ تا ۲۷ خرداد ۱۴۰۵", rotIndex: 5, days: [{ d: "چهارشنبه ۲۰ خرداد" }, { d: "چهارشنبه ۲۷ خرداد" }] }
     ];
 
@@ -417,39 +429,51 @@
             
             block.days.forEach(day => {
                 let rowContent = '';
-                
-                if (selectedGroup === 'all') {
-                    for (let g = 1; g <= 6; g++) {
-                        const stationKey = currentRotationMap[g];
-                        const station = stations[stationKey];
-                        if (station) {
-                            rowContent += `<td><span class="station-cell ${station.css}">${station.name}</span></td>`;
+
+                // شرط جدید برای روزهای تعطیل
+                if (day.holiday) {
+                    const colSpan = selectedGroup === 'all' ? 6 : 1;
+                    rowContent = `<td colspan="${colSpan}">⛔ تعطیل</td>`;
+                    tableRows += `
+                        <tr class="holiday-row">
+                            <td style="font-weight:bold;">${day.d}</td>
+                            ${rowContent}
+                        </tr>
+                    `;
+                } else {
+                    if (selectedGroup === 'all') {
+                        for (let g = 1; g <= 6; g++) {
+                            const stationKey = currentRotationMap[g];
+                            const station = stations[stationKey];
+                            if (station) {
+                                rowContent += `<td><span class="station-cell ${station.css}">${station.name}</span></td>`;
+                            } else {
+                                rowContent += `<td><span class="station-cell bg-off">-</span></td>`;
+                            }
+                        }
+                    } else {
+                        const stationKey = currentRotationMap[selectedGroup];
+                        const myStation = stations[stationKey];
+                        if (myStation) {
+                            rowContent += `
+                                <td>
+                                    <span class="station-cell ${myStation.css}" style="font-size:0.9rem; padding:8px;">
+                                        ${myStation.name}
+                                        <span class="instructor-name">${myStation.instructor}</span>
+                                    </span>
+                                </td>`;
                         } else {
-                            rowContent += `<td><span class="station-cell bg-off">-</span></td>`;
+                            rowContent += `<td><span class="station-cell bg-off">آف</span></td>`;
                         }
                     }
-                } else {
-                    const stationKey = currentRotationMap[selectedGroup];
-                    const myStation = stations[stationKey];
-                    if (myStation) {
-                        rowContent += `
-                            <td>
-                                <span class="station-cell ${myStation.css}" style="font-size:0.9rem; padding:8px;">
-                                    ${myStation.name}
-                                    <span class="instructor-name">${myStation.instructor}</span>
-                                </span>
-                            </td>`;
-                    } else {
-                        rowContent += `<td><span class="station-cell bg-off">آف</span></td>`;
-                    }
-                }
 
-                tableRows += `
-                    <tr>
-                        <td style="font-weight:bold;">${day.d}</td>
-                        ${rowContent}
-                    </tr>
-                `;
+                    tableRows += `
+                        <tr>
+                            <td style="font-weight:bold;">${day.d}</td>
+                            ${rowContent}
+                        </tr>
+                    `;
+                }
             });
 
             card.innerHTML = `
@@ -483,8 +507,6 @@
         { id: 6, label: 'گروه ۶', members: ['مهدیه خواجه زاده', 'مهدی گل محمدی', 'نیما مرادی', ''] },
     ];
 
-    // کلید ذخیره‌سازی فقط برای خواندن (اگر قبلاً دیتایی بوده)
-    // ولی چون ویرایش بسته‌ست، عملاً از hardcodedGroups استفاده میشه.
     const STORAGE_KEY = 'radiology_internship4_final_v1';
     let studentGroups = JSON.parse(localStorage.getItem(STORAGE_KEY)) || hardcodedGroups;
 
