@@ -424,14 +424,14 @@
             { d: 'یکشنبه ۳', a: { mri_bahonar_m: 6, mri_bahonar_e: 5, mri_shafa_m: 4, mri_shafa_e: 1, dentistry: 8, samen: 7, afzali: 2, ultra: 3 } },
             { d: 'دوشنبه ۴', a: { mri_bahonar_m: 6, mri_bahonar_e: 5, mri_shafa_m: 4, mri_shafa_e: 1, dentistry: 8, samen: 7, afzali: 2, ultra: 3 } },
             { d: 'سه‌شنبه ۵', holiday: true, a: {} },
-            { d: 'چهارشنبه ۶', holiday: true, a: {} },
+            { d: 'چهارشنبه ۶', a: { mri_bahonar_m: 6, mri_bahonar_e: 5, mri_shafa_m: 4, mri_shafa_e: 1, dentistry: 8, samen: 7, afzali: 2, ultra: 3 } },
         ]},
         { range: '۹ تا ۱۳ خرداد', days: [
             { d: 'شنبه ۹', a: { mri_bahonar_m: 3, mri_bahonar_e: 4, mri_shafa_m: 5, mri_shafa_e: 6, dentistry: 1, samen: 8, afzali: 7, ultra: 2 } },
             { d: 'یکشنبه ۱۰', a: { mri_bahonar_m: 3, mri_bahonar_e: 4, mri_shafa_m: 5, mri_shafa_e: 6, dentistry: 1, samen: 8, afzali: 7, ultra: 2 } },
             { d: 'دوشنبه ۱۱', a: { mri_bahonar_m: 3, mri_bahonar_e: 4, mri_shafa_m: 5, mri_shafa_e: 6, dentistry: 1, samen: 8, afzali: 7, ultra: 2 } },
             { d: 'سه‌شنبه ۱۲', a: { mri_bahonar_m: 3, mri_bahonar_e: 4, mri_shafa_m: 5, mri_shafa_e: 6, dentistry: 1, samen: 8, afzali: 7, ultra: 2 } },
-            { d: 'چهارشنبه ۱۳', a: { mri_bahonar_m: 3, mri_bahonar_e: 4, mri_shafa_m: 5, mri_shafa_e: 6, dentistry: 1, samen: 8, afzali: 7, ultra: 2 } },
+            { d: 'چهارشنبه ۱۳', holiday: true, a: {} },
         ]},
         { range: '۱۶ تا ۲۰ خرداد', days: [
             { d: 'شنبه ۱۶', a: { mri_bahonar_m: 3, mri_bahonar_e: 4, mri_shafa_m: 5, mri_shafa_e: 6, dentistry: 1, samen: 8, afzali: 7, ultra: 2 } },
@@ -453,8 +453,8 @@
         ]},
         { range: '۱ تا ۳ تیر', days: [
             { d: 'دوشنبه ۱', a: { mri_bahonar_m: 4, mri_bahonar_e: 3, mri_shafa_m: 2, mri_shafa_e: 5, dentistry: 6, samen: 1, afzali: 8, ultra: 7 } },
-            { d: 'سه‌شنبه ۲', a: { mri_bahonar_m: 4, mri_bahonar_e: 3, mri_shafa_m: 2, mri_shafa_e: 5, dentistry: 6, samen: 1, afzali: 8, ultra: 7 } },
-            { d: 'چهارشنبه ۳', a: { mri_bahonar_m: 4, mri_bahonar_e: 3, mri_shafa_m: 2, mri_shafa_e: 5, dentistry: 6, samen: 1, afzali: 8, ultra: 7 } },
+            { d: 'سه‌شنبه ۲', holiday: true, a: {} },
+            { d: 'چهارشنبه ۳', holiday: true, a: {} },
         ]},
     ];
 
@@ -565,7 +565,6 @@
     const STORAGE_KEY = 'radiologyGroups_final_v1';
     let studentGroups = JSON.parse(localStorage.getItem(STORAGE_KEY)) || hardcodedGroups;
 
-    // تابع نمایش اسامی (اصلاح شده برای نمایش ثابت)
     function renderNamesTable() {
         const container = document.getElementById('namesTableContainer');
         let html = `<table><thead><tr><th style="width:60px">ردیف</th>`;
@@ -575,12 +574,10 @@
         });
         html += `</tr></thead><tbody>`;
 
-        // نمایش 3 ردیف ثابت (چون گروه‌ها 3 نفره هستند)
         for (let idx = 0; idx < 3; idx++) {
             html += `<tr><td>نفر ${idx === 0 ? 'اول' : idx === 1 ? 'دوم' : 'سوم'}</td>`;
             studentGroups.forEach(g => {
                 const val = g.members[idx] || '-';
-                // نمایش به صورت متن ثابت
                 html += `<td>
                     <span class="static-name">${val}</span>
                 </td>`;
